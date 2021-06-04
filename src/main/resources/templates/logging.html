@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>日志在线管理</title>
+</head>
+<body>
+
+    <select th:field="*{files}">
+        <option th:each="file : ${files}"
+                th:value="${file}"
+                th:text="${file}"></option>
+    </select>
+    <div id="logContainer">
+        <div></div>
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            if (typeof (WebSocket) == "undefined") {
+                console.log("您使用的浏览器不支持WebSocket");
+            } else {
+                //连接到websocket端点，测试服、正式服环境要写应用所在机器的具体域名|ip
+                let socket = new WebSocket("ws://localhost:8080/wsServer");
+                socket.onopen = () => {
+                    console.log("已连接到wsServer");
+                };
+                socket.onclose = () => {
+                    console.log("已断开与wsServer的连接");
+                };
+                socket.onerror = (e) => {
+                    console.log("发生错误", e);
+                }
+                socket.onmessage = function (event) {
+                    console.log("接收到的数据：" + event.data);
+                    //添加到页面中
+                    $("#logContainer div").append(event.data);
+                    //滚动条滚动到最低部
+                    $("#logContainer").scrollTop($("#logContainer div").height() - $("#logContainer").height());
+                };
+            }
+        });
+    </script>
+</body>
+</html>
