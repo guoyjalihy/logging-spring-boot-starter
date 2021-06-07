@@ -1,6 +1,6 @@
 logging:
   file:
-    path: D:\Project\cpms-service\logs
+    path: /tmp/logs
 
 spring:
   thymeleaf:

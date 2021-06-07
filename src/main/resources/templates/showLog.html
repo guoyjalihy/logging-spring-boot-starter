@@ -1,27 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>日志在线管理</title>
 </head>
-<body>
-
-    <select th:field="*{files}">
-        <option th:each="file : ${files}"
-                th:value="${file}"
-                th:text="${file}"></option>
-    </select>
-    <div id="logContainer">
+<body onunload="closeWebSocket()">
+    <div id="logContainer" class="showLogContainer">
         <div></div>
     </div>
-    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script th:src="@{/js/jquery-3.6.0.min.js}"></script>
     <script>
+        let socket;
         $(document).ready(function () {
+            const fileName = window.location.href.split("?fileName=")[1];
             if (typeof (WebSocket) == "undefined") {
                 console.log("您使用的浏览器不支持WebSocket");
             } else {
                 //连接到websocket端点，测试服、正式服环境要写应用所在机器的具体域名|ip
-                let socket = new WebSocket("ws://localhost:8080/wsServer");
+                socket = new WebSocket("ws://localhost:8080/wsServer?fileName=" + fileName);
                 socket.onopen = () => {
                     console.log("已连接到wsServer");
                 };
@@ -40,6 +39,15 @@
                 };
             }
         });
+        function closeWebSocket(){
+            socket.close();
+        }
     </script>
 </body>
+<style type="text/css">
+    body{
+        background-color: black;
+        color: white;
+    }
+</style>
 </html>

@@ -5,8 +5,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.File;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +33,7 @@ public class LoggingController {
         String rootPath = filePath;
         iteratorFile(file,fileList,rootPath);
         model.addAttribute("files",fileList);
-        model.addAttribute("text","text");
-        return "logging";
+        return "fileSelect";
     }
 
     private void iteratorFile(File file,List<String> fileList,String rootPath){
@@ -42,8 +43,58 @@ public class LoggingController {
                 rootPath = files[i].getPath();
                 iteratorFile(files[i],fileList,rootPath);
             }else{
-                String filePath = rootPath + "\\" + files[i].getName();
+                String filePath = rootPath + "/" + files[i].getName();
                 fileList.add(filePath);
+            }
+        }
+    }
+
+
+    @RequestMapping(value = "showLog",method = RequestMethod.GET)
+    public String showLog(){
+        return "showLog";
+    }
+
+    @RequestMapping(value = "download",method = RequestMethod.GET)
+    public void  download(HttpServletResponse response , Model model, @RequestParam String fileName) {
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+        byte[] buff = new byte[1024];
+        //创建缓冲输入流
+        BufferedInputStream bis = null;
+        OutputStream outputStream = null;
+
+        try {
+            outputStream = response.getOutputStream();
+
+            //这个路径为待下载文件的路径
+            bis = new BufferedInputStream(new FileInputStream(new File(fileName)));
+            int read = bis.read(buff);
+
+            //通过while循环写入到指定了的文件夹中
+            while (read != -1) {
+                outputStream.write(buff, 0, buff.length);
+                outputStream.flush();
+                read = bis.read(buff);
+            }
+        } catch ( IOException e ) {
+            e.printStackTrace();
+            //出现异常返回给页面失败的信息
+            model.addAttribute("result","下载失败");
+        } finally {
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

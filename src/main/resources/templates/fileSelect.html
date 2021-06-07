@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>日志在线管理</title>
+</head>
+<body>
+    <div class="select">
+        <span>选择日志文件：</span>
+        <select id="fileSelect" th:field="*{files}">
+            <option th:each="file : ${files}"
+                    th:value="${file}"
+                    th:text="${file}"></option>
+        </select>
+        <button class="ui-button" onclick="view()">查看</button>
+        <button class="ui-button" onclick="download()">下载</button>
+    </div>
+
+    <script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script type="application/javascript">
+        function view(){
+            let fileName = $("#fileSelect").val();
+            let url = "showLog?fileName=" + fileName;
+            window.open(url,'_blank');
+        }
+        function download(){
+            let fileName = $("#fileSelect").val();
+            let url = "download?fileName=" + fileName;
+            window.location.href= url;
+        }
+    </script>
+</body>
+<style type="text/css">
+
+    body {
+        font-size: 20px;
+        color: #090;
+        background-color: #eee;
+        text-align: center;
+    }
+    .select {
+        margin-top: 15%;
+        display: inline-block;
+        width: 30%;
+        position: relative;
+        vertical-align: middle;
+        padding: 10px;
+        overflow: hidden;
+        background-color: #fff;
+        color: #555;
+        border: 1px solid #aaa;
+        text-shadow: none;
+        border-radius: 4px;
+        transition: box-shadow 0.25s ease;
+        z-index: 2;
+    }
+
+    .select:hover {
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .select:before {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+        border-top-color: #ccc;
+        top: 40px;
+        right: 10px;
+        cursor: pointer;
+        z-index: -2;
+    }
+    .select select {
+        cursor: pointer;
+        padding: 10px;
+        width: 100%;
+        border: none;
+        background: transparent;
+        background-image: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        font-size: 20px;
+    }
+    .select span{
+        font-weight: bolder
+    }
+    .select select:focus {
+        outline: none;
+    }
+    .select button {
+        width: 100px;
+        padding:8px;
+        background-color: #428bca;
+        border-color: #357ebd;
+        color: #fff;
+        -moz-border-radius: 10px;
+        -webkit-border-radius: 10px;
+        border-radius: 10px; /* future proofing */
+        -khtml-border-radius: 10px; /* for old Konqueror browsers */
+        text-align: center;
+        vertical-align: middle;
+        border: 1px solid transparent;
+        font-weight: 900;
+        font-size:80%;
+        cursor:pointer;
+    }
+</style>
+</html>
