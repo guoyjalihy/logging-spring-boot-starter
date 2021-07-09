@@ -20,8 +20,11 @@ import java.util.List;
 @Controller
 @RequestMapping(value = "logging")
 public class LoggingController {
-    @Value("${logging.file.path}")
-    public String filePath = "";
+
+    private String filePath;
+    public LoggingController(String filePath){
+        this.filePath = filePath;
+    }
 
     @RequestMapping(value = "files",method = RequestMethod.GET)
     public String fileNames(Model model){
